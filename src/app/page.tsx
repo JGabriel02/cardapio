@@ -134,8 +134,13 @@ function Header() {
     <header className="sticky top-0 z-10 bg-black/90 backdrop-blur text-white">
       <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <img src="/assets/logo.jpg" alt="Mr George Hamburgueria" className="h-12 w-12 rounded-full object-cover ring-2 ring-white/20" />
-          <div className="leading-tight">
+          <img
+            src="/assets/logo.jpg"
+            alt="Mr George Hamburgueria"
+            className="h-12 w-12 rounded-full object-cover ring-2 ring-white/20"
+          />
+          {/* Texto que desaparece em telas menores */}
+          <div className="leading-tight hidden sm:block">
             <h1 className="text-xl font-extrabold tracking-wide">MR GEORGE</h1>
             <p className="text-xs text-white/70">Hamburgueria • Fast Food</p>
           </div>
