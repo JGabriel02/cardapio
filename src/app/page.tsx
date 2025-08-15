@@ -1,103 +1,238 @@
-import Image from "next/image";
+import React from "react";
 
-export default function Home() {
+// 🔢 Configure o número do WhatsApp (somente dígitos, com DDI/DDD)
+const WHATSAPP_NUMBER = "5551994715897"; // ← troque aqui
+const WHATSAPP_MSG = encodeURIComponent("Olá, gostaria de fazer um pedido!"); // Mensagem padrão
+
+// 🧾 Dados do cardápio (extraídos do PDF do usuário)
+const menu = [
+  {
+    category: "Hambúrgueres",
+    items: [
+      {
+        name: "Burguer Supremo",
+        description:
+          "Pão de brioche, 3 blends de carne (80g cada), maionese, queijo provolone, molho cheddar, bacon picado.",
+        price: 45.0,
+      },
+      {
+        name: "Mr. George",
+        description:
+          "Burger (140g), queijo cheddar, tomate, alface americana e molho da casa.",
+        price: 32.9,
+      },
+      {
+        name: "Big George",
+        description:
+          "Dois burgers (140g), bacon, cheddar, cebola caramelizada e molho da casa.",
+        price: 49.9,
+      },
+      {
+        name: "Churraking",
+        description:
+          "Pão de brioche, molho da casa, burger (140g), queijo muçarela, bacon, onion rings, queijo coalho.",
+        price: 49.9,
+      },
+      {
+        name: "Firenze Burger",
+        description:
+          "Burger (140g), queijo provolone, chimichurri, tomate seco e molho da casa.",
+        price: 42.9,
+      },
+      {
+        name: "Mr. Chicken Burger",
+        description:
+          "Burger de frango, cream cheese, alface, tomate, queijo e molho da casa.",
+        price: 32.9,
+      },
+      {
+        name: "Fit Burger",
+        description: "Burger (140g), requeijão, alface, tomate, queijo.",
+        price: 32.9,
+      },
+      {
+        name: "Mr. Joanes",
+        description:
+          "Burger (140g), cebola caramelizada, cebola roxa, molho de cheddar, bacon, rúcula, barbecue e molho da casa.",
+        price: 37.9,
+      },
+    ],
+  },
+  {
+    category: "Cachorros-quentes",
+    items: [
+      {
+        name: "Nº I",
+        description:
+          "Pão, 2 salsichas, maionese, molho, ervilha, milho, batata palha, cebola roxa, tomate, queijo ralado, tempero verde, ketchup e mostarda.",
+        price: 17.9,
+      },
+      {
+        name: "Nº II",
+        description:
+          "Pão, 3 salsichas, maionese, molho, ervilha, milho, batata palha, cebola roxa, tomate, queijo ralado, tempero verde, ketchup e mostarda.",
+        price: 21.9,
+      },
+      {
+        name: "Nº III",
+        description:
+          "Pão, 1 linguiça, maionese, molho, ervilha, milho, batata palha, cebola roxa, tomate, queijo ralado, tempero verde, ketchup e mostarda.",
+        price: 22.9,
+      },
+      {
+        name: "Nº IV",
+        description:
+          "Pão, 2 linguiças, maionese, molho, ervilha, milho, batata palha, cebola roxa, tomate, queijo ralado, tempero verde, ketchup e mostarda.",
+        price: 27.9,
+      },
+      {
+        name: "Nº V",
+        description:
+          "Pão, 3 linguiças, maionese, molho, ervilha, milho, batata palha, cebola roxa, tomate, queijo ralado, tempero verde, ketchup e mostarda.",
+        price: 33.9,
+      },
+    ],
+  },
+  {
+    category: "Boxes",
+    items: [
+      {
+        name: "Box Solteiro",
+        description:
+          "1 hambúrguer clássico, anéis de cebola, batata e nosso molho da casa de 50ml.",
+        price: 39.9,
+      },
+      {
+        name: "Box Casal",
+        description:
+          "2 hambúrgueres, anéis de cebola, batata e nosso molho da casa de 100ml, uma barra de chocolate.",
+        price: 69.9,
+      },
+      {
+        name: "Box Família",
+        description:
+          "3 hambúrgueres, anéis de cebola, batata e nosso molho da casa de 100ml, 1 refrigerante de 2L.",
+        price: 109.9,
+      },
+      {
+        name: "Box Super Família",
+        description:
+          "4 hambúrgueres, anéis de cebola, batata frita, nosso molho da casa de 200ml e 1 refrigerante de 3L.",
+        price: 124.9,
+      },
+    ],
+  },
+];
+
+function Currency({ value }: { value: number }) {
+  return <span>{value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</span>;
+}
+
+function Header() {
+  const wa = `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MSG}`;
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <header className="sticky top-0 z-10 bg-black/90 backdrop-blur text-white">
+      <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <img src="/assets/logo.jpg" alt="Mr George Hamburgueria" className="h-12 w-12 rounded-full object-cover ring-2 ring-white/20" />
+          <div className="leading-tight">
+            <h1 className="text-xl font-extrabold tracking-wide">MR GEORGE</h1>
+            <p className="text-xs text-white/70">Hamburgueria • Fast Food</p>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
         <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+          href={wa}
           target="_blank"
-          rel="noopener noreferrer"
+          rel="noreferrer"
+          className="inline-flex items-center gap-2 rounded-2xl px-4 py-2 text-sm font-semibold bg-green-500 hover:bg-green-600 active:scale-[.98] transition"
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
+          Fazer pedido no WhatsApp
         </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
+    </header>
+  );
+}
+
+function Banner() {
+  return (
+    <div className="bg-amber-100 border-y border-amber-200">
+      <div className="mx-auto max-w-6xl px-4 py-4 text-center text-amber-900 font-medium">
+        Todos os pedidos acompanham <strong>200g de batatas</strong> 🍟
+      </div>
     </div>
+  );
+}
+
+function ItemCard({ item, category }: { item: { name: string; description: string; price: number }; category: string }) {
+  // Escolha a imagem genérica com base na categoria
+  const categoryImage =
+    category === "Hambúrgueres"
+      ? "/assets/burger.jpeg"
+      : category === "Cachorros-quentes"
+      ? "/assets/dog.jpeg"
+      : "/assets/box.jpeg";
+
+  return (
+    <div className="flex flex-col sm:flex-row gap-4 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm hover:shadow-md transition-shadow">
+      <img
+        src={categoryImage}
+        alt={`Imagem ilustrativa da categoria ${category}`}
+        className="h-24 w-24 sm:h-32 sm:w-32 rounded-xl object-cover"
+      />
+      <div className="flex-1">
+        <div className="flex items-start justify-between gap-3">
+          <h3 className="text-lg font-bold text-zinc-900">{item.name}</h3>
+          <div className="shrink-0 rounded-full bg-zinc-900 px-3 py-1 text-sm font-semibold text-white">
+            <Currency value={item.price} />
+          </div>
+        </div>
+        <p className="mt-1 text-sm text-zinc-600">{item.description}</p>
+      </div>
+    </div>
+  );
+}
+
+function Section({ category, items }: { category: string; items: { name: string; description: string; price: number }[] }) {
+  return (
+    <section className="mx-auto max-w-6xl px-4">
+      <h2 className="mt-8 mb-4 text-2xl font-extrabold tracking-tight">{category}</h2>
+      <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        {items.map((it, idx) => (
+          <ItemCard key={`${category}-${idx}`} item={it} category={category} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+export default function MenuPage() {
+  return (
+    <main className="min-h-dvh bg-zinc-50 text-zinc-900">
+      <Header />
+      <Banner />
+
+      {/* Hero */}
+      <section className="mx-auto max-w-6xl px-4 pt-8 pb-2">
+        <div className="rounded-3xl bg-gradient-to-r from-zinc-900 to-zinc-700 p-6 text-white">
+          <h2 className="text-2xl sm:text-3xl font-extrabold">Cardápio</h2>
+          <p className="mt-1 text-white/80 text-sm">
+            Selecione seu lanche favorito e finalize pelo WhatsApp. Promoções podem aparecer no atendimento 😉
+          </p>
+        </div>
+      </section>
+
+      {/* Seções */}
+      {menu.map((bloc, i) => (
+        <Section key={i} category={bloc.category} items={bloc.items} />
+      ))}
+
+      {/* Rodapé */}
+      <footer className="mt-10 border-t border-zinc-200 bg-white">
+        <div className="mx-auto max-w-6xl px-4 py-6 text-sm text-zinc-600 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+          <p>© {new Date().getFullYear()} Mr George Hamburgueria</p>
+          <p className="text-zinc-500">Todos os preços em reais (BRL). Imagens ilustrativas.</p>
+        </div>
+      </footer>
+    </main>
   );
 }
