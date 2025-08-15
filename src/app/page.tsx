@@ -1,7 +1,7 @@
 import React from "react";
 
 // 🔢 Configure o número do WhatsApp (somente dígitos, com DDI/DDD)
-const WHATSAPP_NUMBER = "5551994715897"; // ← troque aqui
+const WHATSAPP_NUMBER = "555181444557"; // ← troque aqui
 const WHATSAPP_MSG = encodeURIComponent("Olá, gostaria de fazer um pedido!"); // Mensagem padrão
 
 // 🧾 Dados do cardápio (extraídos do PDF do usuário)
