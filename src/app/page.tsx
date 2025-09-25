@@ -1,10 +1,11 @@
-import React from "react";
+"use client"; // Diretiva para marcar o arquivo como Client Component
 
-// 🔢 Configure o número do WhatsApp (somente dígitos, com DDI/DDD)
-const WHATSAPP_NUMBER = "555181444557"; // ← troque aqui
+import React, { useState } from "react";
+
+const WHATSAPP_NUMBER = "555181444557"; // Número do WhatsApp
 const WHATSAPP_MSG = encodeURIComponent("Olá, gostaria de fazer um pedido!"); // Mensagem padrão
 
-// 🧾 Dados do cardápio (extraídos do PDF do usuário)
+// 🧾 Dados do cardápio
 const menu = [
   {
     category: "Hambúrgueres",
@@ -34,20 +35,9 @@ const menu = [
         price: 49.9,
       },
       {
-        name: "Firenze Burger",
-        description:
-          "Burger (140g), queijo provolone, chimichurri, tomate seco e molho da casa.",
-        price: 42.9,
-      },
-      {
         name: "Mr. Chicken Burger",
         description:
           "Burger de frango, cream cheese, alface, tomate, queijo e molho da casa.",
-        price: 32.9,
-      },
-      {
-        name: "Fit Burger",
-        description: "Burger (140g), requeijão, alface, tomate, queijo.",
         price: 32.9,
       },
       {
@@ -124,64 +114,81 @@ const menu = [
   },
 ];
 
+// Componente para formatar valores monetários
 function Currency({ value }: { value: number }) {
   return <span>{value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</span>;
 }
 
-function Header() {
-  const wa = `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MSG}`;
+// Componente de cabeçalho
+function Header({ wa }: { wa: string }) {
   return (
     <header className="sticky top-0 z-10 bg-black/90 backdrop-blur text-white">
       <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <img
-            src="/assets/logo.jpg"
-            alt="Mr George Hamburgueria"
-            className="h-12 w-12 rounded-full object-cover ring-2 ring-white/20"
-          />
-          {/* Texto que desaparece em telas menores */}
+          <img src="/assets/logo.jpg" alt="Mr George Hamburgueria" className="h-12 w-12 rounded-full object-cover ring-2 ring-white/20" />
           <div className="leading-tight hidden sm:block">
             <h1 className="text-xl font-extrabold tracking-wide">MR GEORGE</h1>
             <p className="text-xs text-white/70">Hamburgueria • Fast Food</p>
           </div>
         </div>
-        <a
-          href={wa}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex items-center gap-2 rounded-2xl px-4 py-2 text-sm font-semibold bg-green-500 hover:bg-green-600 active:scale-[.98] transition"
-        >
-          Fazer pedido no WhatsApp
+        <a href={wa} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-2xl px-4 py-2 text-sm font-semibold bg-green-500 hover:bg-green-600 active:scale-[.98] transition">
+          Finalizar pedido no WhatsApp
         </a>
       </div>
     </header>
   );
 }
 
+// Banner informativo
 function Banner() {
   return (
     <div className="bg-amber-100 border-y border-amber-200">
       <div className="mx-auto max-w-6xl px-4 py-4 text-center text-amber-900 font-medium">
-        Todos os pedidos acompanham <strong>200g de batatas</strong> 🍟
+        Todos os hambúrgueres acompanham <strong>200g de batatas</strong> 🍟
       </div>
     </div>
   );
 }
 
-function ItemCard({ item, category }: { item: { name: string; description: string; price: number }; category: string }) {
-  // Escolha a imagem genérica com base na categoria
+// Card para exibir cada item do cardápio
+function ItemCard({
+  item,
+  category,
+  onSelectItem,
+  isSelected,
+}: {
+  item: { name: string; description: string; price: number };
+  category: string;
+  onSelectItem: (item: { name: string; price: number }) => void;
+  isSelected: boolean;
+}) {
+  const itemImages: { [key: string]: string } = {
+    "Burguer Supremo": "/assets/burger_supremo.jpg",
+    "Mr. George": "/assets/mr_george.jpg",
+    "Big George": "/assets/big_george.jpg",
+    "Churraking": "/assets/churraking.jpg",
+    "Mr. Chicken Burger": "/assets/mr_chicken.jpg",
+    "Mr. Joanes": "/assets/burger.jpeg",
+  };
+
   const categoryImage =
-    category === "Hambúrgueres"
-      ? "/assets/burger.jpeg"
-      : category === "Cachorros-quentes"
-      ? "/assets/dog.jpeg"
-      : "/assets/box.jpeg";
+    itemImages[item.name] ||
+    (category === "Cachorros-quentes"
+      ? "/assets/dog.jpg"
+      : category === "Boxes"
+      ? "/assets/box.jpeg"
+      : "/assets/default.jpg");
 
   return (
-    <div className="flex flex-col sm:flex-row gap-4 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm hover:shadow-md transition-shadow">
+    <div
+      onClick={() => onSelectItem({ name: item.name, price: item.price })}
+      className={`flex flex-col sm:flex-row gap-4 rounded-2xl border p-4 shadow-sm transition-shadow cursor-pointer ${
+        isSelected ? "border-green-500 bg-green-50" : "border-zinc-200 bg-white hover:shadow-md"
+      }`}
+    >
       <img
         src={categoryImage}
-        alt={`Imagem ilustrativa da categoria ${category}`}
+        alt={`Imagem do item ${item.name}`}
         className="h-24 w-24 sm:h-32 sm:w-32 rounded-xl object-cover"
       />
       <div className="flex-1">
@@ -197,47 +204,75 @@ function ItemCard({ item, category }: { item: { name: string; description: strin
   );
 }
 
-function Section({ category, items }: { category: string; items: { name: string; description: string; price: number }[] }) {
+// Seção para exibir categorias e itens
+function Section({
+  category,
+  items,
+  onSelectItem,
+  selectedItems,
+}: {
+  category: string;
+  items: { name: string; description: string; price: number }[];
+  onSelectItem: (item: { name: string; price: number }) => void;
+  selectedItems: { name: string; price: number }[];
+}) {
   return (
     <section className="mx-auto max-w-6xl px-4">
       <h2 className="mt-8 mb-4 text-2xl font-extrabold tracking-tight">{category}</h2>
       <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {items.map((it, idx) => (
-          <ItemCard key={`${category}-${idx}`} item={it} category={category} />
+          <ItemCard
+            key={`${category}-${idx}`}
+            item={it}
+            category={category}
+            onSelectItem={onSelectItem}
+            isSelected={selectedItems.some((selected) => selected.name === it.name)}
+          />
         ))}
       </div>
     </section>
   );
 }
 
+// Página principal
 export default function MenuPage() {
+  const [selectedItems, setSelectedItems] = useState<{ name: string; price: number }[]>([]);
+
+  const handleSelectItem = (item: { name: string; price: number }) => {
+    setSelectedItems((prev) => {
+      const isAlreadySelected = prev.find((i) => i.name === item.name);
+      if (isAlreadySelected) {
+        return prev.filter((i) => i.name !== item.name);
+      }
+      return [...prev, item];
+    });
+  };
+
+  const generateWhatsAppMessage = () => {
+    if (selectedItems.length === 0) {
+      return WHATSAPP_MSG;
+    }
+    const itemsMessage = selectedItems
+      .map((item) => `- ${item.name} (${item.price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })})`)
+      .join("\n");
+    return encodeURIComponent(`Olá, gostaria de fazer um pedido com os seguintes itens:\n${itemsMessage}`);
+  };
+
+  const wa = `https://wa.me/${WHATSAPP_NUMBER}?text=${generateWhatsAppMessage()}`;
+
   return (
     <main className="min-h-dvh bg-zinc-50 text-zinc-900">
-      <Header />
+      <Header wa={wa} />
       <Banner />
-
-      {/* Hero */}
-      <section className="mx-auto max-w-6xl px-4 pt-8 pb-2">
-        <div className="rounded-3xl bg-gradient-to-r from-zinc-900 to-zinc-700 p-6 text-white">
-          <h2 className="text-2xl sm:text-3xl font-extrabold">Cardápio</h2>
-          <p className="mt-1 text-white/80 text-sm">
-            Selecione seu lanche favorito e finalize pelo WhatsApp. Promoções podem aparecer no atendimento 😉
-          </p>
-        </div>
-      </section>
-
-      {/* Seções */}
       {menu.map((bloc, i) => (
-        <Section key={i} category={bloc.category} items={bloc.items} />
+        <Section
+          key={i}
+          category={bloc.category}
+          items={bloc.items}
+          onSelectItem={handleSelectItem}
+          selectedItems={selectedItems}
+        />
       ))}
-
-      {/* Rodapé */}
-      <footer className="mt-10 border-t border-zinc-200 bg-white">
-        <div className="mx-auto max-w-6xl px-4 py-6 text-sm text-zinc-600 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-          <p>© {new Date().getFullYear()} Mr George Hamburgueria</p>
-          <p className="text-zinc-500">Todos os preços em reais (BRL). Imagens ilustrativas.</p>
-        </div>
-      </footer>
     </main>
   );
 }
