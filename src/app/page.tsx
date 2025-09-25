@@ -260,8 +260,11 @@ export default function MenuPage() {
 
   const wa = `https://wa.me/${WHATSAPP_NUMBER}?text=${generateWhatsAppMessage()}`;
 
+  // Calcular o total dos itens selecionados
+  const totalPrice = selectedItems.reduce((total, item) => total + item.price, 0);
+
   return (
-    <main className="min-h-dvh bg-zinc-50 text-zinc-900">
+    <main className="min-h-dvh bg-zinc-50 text-zinc-900 relative">
       <Header wa={wa} />
       <Banner />
       {menu.map((bloc, i) => (
@@ -273,6 +276,12 @@ export default function MenuPage() {
           selectedItems={selectedItems}
         />
       ))}
+
+      {/* Exibir o total no canto da tela */}
+      <div className="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-full shadow-lg">
+        <span className="text-lg font-bold">Total: </span>
+        <Currency value={totalPrice} />
+      </div>
     </main>
   );
 }
